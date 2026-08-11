@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import ratelimit from "express-rate-limit"
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 
@@ -21,9 +22,12 @@ app.use(limiter);
 app.use(express.json());
 
 
+app.use("/api/users", userRoutes);
+
 //test route
 app.get("/", (req, res) => {
   res.send("Enterprise Identity and Access Management API is running...");
 });
+
 
 export default app;

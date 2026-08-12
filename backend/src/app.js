@@ -8,13 +8,14 @@ import organizationRoutes from "./routes/organization.routes.js";
 import departmentRoutes from "./routes/department.routes.js";
 import teamRoutes from "./routes/team.routes.js";
 import permissionRoutes from "./routes/permission.routes.js";
+import roleRoutes from "./routes/role.routes.js";
 
 const app = express();
 
 const limiter = ratelimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    limit: 100,
-    message: "Too many requests, please try again later."
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100,
+  message: "Too many requests, please try again later."
 })
 
 
@@ -31,6 +32,8 @@ app.use("/api/organizations", organizationRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/teams", teamRoutes);
 app.use("/api/permissions", permissionRoutes);
+app.use("/api/roles", roleRoutes);
+
 
 //test route
 app.get("/", (req, res) => {

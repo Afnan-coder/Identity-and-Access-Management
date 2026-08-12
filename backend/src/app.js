@@ -5,6 +5,7 @@ import morgan from "morgan";
 import ratelimit from "express-rate-limit"
 import userRoutes from "./routes/user.routes.js";
 import organizationRoutes from "./routes/organization.routes.js";
+import departmentRoutes from "./routes/department.routes.js";
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.use(express.json());
 
 app.use("/api/users", userRoutes);
 app.use("/api/organizations", organizationRoutes);
-
+app.use("/api/departments", departmentRoutes);
 
 //test route
 app.get("/", (req, res) => {

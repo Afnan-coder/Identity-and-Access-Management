@@ -7,6 +7,7 @@ import userRoutes from "./routes/user.routes.js";
 import organizationRoutes from "./routes/organization.routes.js";
 import departmentRoutes from "./routes/department.routes.js";
 import teamRoutes from "./routes/team.routes.js";
+import permissionRoutes from "./routes/permission.routes.js";
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/organizations", organizationRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/teams", teamRoutes);
+app.use("/api/permissions", permissionRoutes);
 
 //test route
 app.get("/", (req, res) => {

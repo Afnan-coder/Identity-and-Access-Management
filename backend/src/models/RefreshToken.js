@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const refreshTokenSchema = new mongoose.Schema(
     {
-        token: {
+        tokenHash: {
             type: String,
             required: true,
             unique: true,
@@ -29,6 +29,9 @@ const refreshTokenSchema = new mongoose.Schema(
     }
 );
 
-const RefreshToken = mongoose.model("RefreshToken", refreshTokenSchema);
+const RefreshToken = mongoose.model(
+    "RefreshToken",
+    refreshTokenSchema
+);
 
 export default RefreshToken;

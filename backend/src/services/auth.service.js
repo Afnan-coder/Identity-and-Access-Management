@@ -6,6 +6,8 @@ import {
 } from "../utils/jwt.js";
 import crypto from "crypto";
 import { createRefreshToken } from "../repositories/refreshToken.repository.js";
+import { createSession } from "../repositories/session.repository.js";
+
 
 const loginUser = async (email, password) => {
     const user = await findUserByEmail(email);
@@ -39,10 +41,20 @@ const loginUser = async (email, password) => {
         .update(refreshToken)
         .digest("hex");
 
-    await createRefreshToken({
+    const savedRefreshToken = await createRefreshToken({
         user: user._id,
         tokenHash: refreshTokenHash,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),// 7 days in milliseconds
+        expiresAt: new Date(
+            Date.now() + 7 * 24 * 60 * 60 * 1000
+        ),
+    });
+
+    await createSession({
+        user: user._id,
+        refreshToken: savedRefreshToken._id,
+        expiresAt: new Date(
+            Date.now() + 7 * 24 * 60 * 60 * 1000
+        ),
     });
 
     return {

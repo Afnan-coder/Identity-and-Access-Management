@@ -8,7 +8,16 @@ const findRefreshTokenByHash = async (tokenHash) => {
     return await RefreshToken.findOne({ tokenHash });
 };
 
+const revokeRefreshToken = async (tokenHash) => {
+    return await RefreshToken.findOneAndUpdate(
+        { tokenHash },
+        { revoked: true },
+        { new: true }
+    );
+};
+
 export {
     createRefreshToken,
     findRefreshTokenByHash,
+    revokeRefreshToken,
 };

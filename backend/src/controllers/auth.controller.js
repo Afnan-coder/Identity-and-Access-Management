@@ -1,4 +1,4 @@
-import { loginUser } from "../services/auth.service.js";
+import { loginUser, refreshAccessToken } from "../services/auth.service.js";
 
 const login = async (req, res) => {
     try {
@@ -19,6 +19,29 @@ const login = async (req, res) => {
     }
 };
 
+const refresh = async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+
+        const accessToken = await refreshAccessToken(
+            refreshToken
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Access token refreshed successfully",
+            data: {
+                accessToken,
+            },
+        });
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
 export {
     login,
+    refresh,
 };

@@ -8,7 +8,23 @@ const findSessionById = async (sessionId) => {
     return await Session.findById(sessionId);
 };
 
+const deactivateSession = async (sessionId) => {
+    return await Session.findByIdAndUpdate(
+        sessionId,
+        { isActive: false },
+        { new: true }
+    );
+};
+
+const findSessionByRefreshToken = async (refreshTokenId) => {
+    return await Session.findOne({
+        refreshToken: refreshTokenId,
+    });
+};
+
 export {
     createSession,
     findSessionById,
+    deactivateSession,
+    findSessionByRefreshToken
 };

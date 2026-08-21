@@ -5,7 +5,8 @@ import crypto from "crypto";
 import { findUserByEmail } from "../repositories/auth.repository.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
 import { createRefreshToken, findRefreshTokenByHash, revokeRefreshToken } from "../repositories/refreshToken.repository.js";
-import { createSession } from "../repositories/session.repository.js";
+import { createSession, findSessionByRefreshToken, deactivateSession } from "../repositories/session.repository.js";
+
 
 
 const loginUser = async (email, password) => {
@@ -133,7 +134,18 @@ const logoutUser = async (refreshToken) => {
         throw new Error("Refresh token already revoked");
     }
 
+    // Revoke refresh token
     await revokeRefreshToken(refreshTokenHash);
+
+    // Find associated session
+    const session = await findSessionByRefreshToken(
+        storedToken._id
+    );
+
+    // Deactivate session
+    if (session) {
+        await deactivateSession(session._id);
+    }
 
     return true;
 };

@@ -4,7 +4,8 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const result = await loginUser(email, password);
+        const result = await loginUser(email, password, req.ip, req.headers["user-agent"]);
+        
 
         res.status(200).json({
             success: true,

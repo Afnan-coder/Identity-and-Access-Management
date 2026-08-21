@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { UAParser } from "ua-parser-js"
 
 import { findUserByEmail } from "../repositories/auth.repository.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
@@ -9,7 +10,7 @@ import { createSession, findSessionByRefreshToken, deactivateSession } from "../
 
 
 
-const loginUser = async (email, password) => {
+const loginUser = async (email, password, ipAddress, userAgent) => {
     const user = await findUserByEmail(email);
 
     if (!user) {
@@ -36,6 +37,11 @@ const loginUser = async (email, password) => {
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
+    const parser = new UAParser(userAgent);
+    const browser = parser.getBrowser().name || "Unknown"
+    const parsedDevice = parser.getDevice().type;
+    const device = parsedDevice || "Desktop";
+ 
     const refreshTokenHash = crypto
         .createHash("sha256")
         .update(refreshToken)
@@ -49,9 +55,13 @@ const loginUser = async (email, password) => {
         ),
     });
 
+
     await createSession({
         user: user._id,
         refreshToken: savedRefreshToken._id,
+        ipAddress,
+        browser,
+        device,
         expiresAt: new Date(
             Date.now() + 7 * 24 * 60 * 60 * 1000
         ),

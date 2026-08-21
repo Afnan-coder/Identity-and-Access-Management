@@ -24,7 +24,8 @@
     "joi": "^18.2.3",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.1",
-    "morgan": "^1.11.0"
+    "morgan": "^1.11.0",
+    "ua-parser-js": "^2.0.10"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

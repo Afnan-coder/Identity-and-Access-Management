@@ -1,4 +1,4 @@
-import { loginUser, refreshAccessToken } from "../services/auth.service.js";
+import { loginUser, refreshAccessToken, logoutUser } from "../services/auth.service.js";
 
 const login = async (req, res) => {
     try {
@@ -41,7 +41,27 @@ const refresh = async (req, res) => {
         });
     }
 };
+
+const logout = async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+
+        await logoutUser(refreshToken);
+
+        return res.status(200).json({
+            success: true,
+            message: "Logout successful",
+        });
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 export {
     login,
     refresh,
+    logout,
 };

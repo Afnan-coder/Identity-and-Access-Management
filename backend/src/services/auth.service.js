@@ -4,7 +4,7 @@ import crypto from "crypto";
 
 import { findUserByEmail } from "../repositories/auth.repository.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
-import { createRefreshToken, findRefreshTokenByHash } from "../repositories/refreshToken.repository.js";
+import { createRefreshToken, findRefreshTokenByHash, revokeRefreshToken } from "../repositories/refreshToken.repository.js";
 import { createSession } from "../repositories/session.repository.js";
 
 
@@ -111,7 +111,35 @@ const refreshAccessToken = async (refreshToken) => {
     return accessToken;
 };
 
+const logoutUser = async (refreshToken) => {
+    if (!refreshToken) {
+        throw new Error("Refresh token required");
+    }
+
+    const refreshTokenHash = crypto
+        .createHash("sha256")
+        .update(refreshToken)
+        .digest("hex");
+
+    const storedToken = await findRefreshTokenByHash(
+        refreshTokenHash
+    );
+
+    if (!storedToken) {
+        throw new Error("Refresh token not found");
+    }
+
+    if (storedToken.revoked) {
+        throw new Error("Refresh token already revoked");
+    }
+
+    await revokeRefreshToken(refreshTokenHash);
+
+    return true;
+};
+
 export {
     loginUser,
     refreshAccessToken,
+    logoutUser,
 };

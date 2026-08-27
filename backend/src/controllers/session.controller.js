@@ -1,4 +1,4 @@
-import { getUserSessions } from "../services/session.service.js";
+import { getUserSessions, revokeUserSession } from "../services/session.service.js";
 
 const getSessions = async (req, res) => {
     try {
@@ -18,6 +18,31 @@ const getSessions = async (req, res) => {
     }
 };
 
+const revokeSession = async (req, res) => {
+    try {
+        const { sessionId } = req.params;
+
+        const userId = req.user.userId;
+
+        await revokeUserSession(
+            sessionId,
+            userId
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Session revoked successfully",
+        });
+
+    } catch (error) {
+        return res.status(403).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 export {
     getSessions,
+    revokeSession
 };

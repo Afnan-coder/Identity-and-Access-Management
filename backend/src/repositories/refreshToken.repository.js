@@ -1,5 +1,9 @@
 import RefreshToken from "../models/RefreshToken.js";
 
+const findRefreshTokenById = async (tokenId) => {
+    return await RefreshToken.findById(tokenId);
+};
+
 const createRefreshToken = async (tokenData) => {
     return await RefreshToken.create(tokenData);
 };
@@ -20,4 +24,5 @@ export {
     createRefreshToken,
     findRefreshTokenByHash,
     revokeRefreshToken,
+    findRefreshTokenById
 };

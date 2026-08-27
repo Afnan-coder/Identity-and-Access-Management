@@ -2,11 +2,13 @@ import {
     findSessionsByUser,
     findSessionById,
     deactivateSession,
+    deactivateAllSessions
 } from "../repositories/session.repository.js";
 
 import {
     findRefreshTokenById,
     revokeRefreshToken,
+    revokeAllRefreshTokensByUser
 } from "../repositories/refreshToken.repository.js";
 
 const getUserSessions = async (userId) => {
@@ -43,8 +45,18 @@ const revokeUserSession = async (sessionId, userId) => {
     return true;
 };
 
+const revokeAllUserSessions = async (userId) => {
+
+    await deactivateAllSessions(userId);
+
+    await revokeAllRefreshTokensByUser(userId);
+
+    return true;
+};
+
 
 export {
     getUserSessions,
     revokeUserSession,
+    revokeAllUserSessions
 };

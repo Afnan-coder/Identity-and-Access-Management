@@ -29,10 +29,31 @@ const findSessionsByUser = async (userId) => {
     }).sort({ createdAt: -1 });
 };
 
+const findActiveSessionsByUser = async (userId) => {
+    return await Session.find({
+        user: userId,
+        isActive: true,
+    });
+};
+
+const deactivateAllSessions = async (userId) => {
+    return await Session.updateMany(
+        {
+            user: userId,
+            isActive: true,
+        },
+        {
+            isActive: false,
+        }
+    );
+};
+
 export {
     createSession,
     findSessionById,
     deactivateSession,
     findSessionByRefreshToken,
     findSessionsByUser,
+    findActiveSessionsByUser,
+    deactivateAllSessions
 };

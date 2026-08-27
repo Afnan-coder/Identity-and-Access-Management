@@ -20,9 +20,22 @@ const revokeRefreshToken = async (tokenHash) => {
     );
 };
 
+const revokeAllRefreshTokensByUser = async (userId) => {
+    return await RefreshToken.updateMany(
+        {
+            user: userId,
+            revoked: false,
+        },
+        {
+            revoked: true,
+        }
+    );
+};
+
 export {
     createRefreshToken,
     findRefreshTokenByHash,
     revokeRefreshToken,
-    findRefreshTokenById
+    findRefreshTokenById,
+    revokeAllRefreshTokensByUser
 };

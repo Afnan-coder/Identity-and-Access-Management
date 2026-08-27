@@ -10,6 +10,7 @@ import teamRoutes from "./routes/team.routes.js";
 import permissionRoutes from "./routes/permission.routes.js";
 import roleRoutes from "./routes/role.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import sessionRoutes from './routes/session.routes.js'
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/api/teams", teamRoutes);
 app.use("/api/permissions", permissionRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/sessions", sessionRoutes)
 
 //test route
 app.get("/", (req, res) => {

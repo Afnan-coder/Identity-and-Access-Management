@@ -22,9 +22,17 @@ const findSessionByRefreshToken = async (refreshTokenId) => {
     });
 };
 
+const findSessionsByUser = async (userId) => {
+    return await Session.find({
+        user: userId,
+        isActive: true,
+    }).sort({ createdAt: -1 });
+};
+
 export {
     createSession,
     findSessionById,
     deactivateSession,
-    findSessionByRefreshToken
+    findSessionByRefreshToken,
+    findSessionsByUser,
 };

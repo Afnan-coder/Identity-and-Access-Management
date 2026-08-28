@@ -65,6 +65,11 @@ const userSchema = new mongoose.Schema(
             default: false,
         },
 
+        mfaSecret: {
+            type: String,
+            default: null,
+        },
+
         lastLogin: {
             type: Date,
         },

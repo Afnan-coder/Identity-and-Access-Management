@@ -20,7 +20,18 @@ const generateRefreshToken = (payload) => {
     );
 };
 
+const generateMFAChallengeToken = (payload) => {
+    return jwt.sign(
+        payload,
+        process.env.JWT_ACCESS_SECRET,
+        {
+            expiresIn: "5m",
+        }
+    );
+};
+
 export {
     generateAccessToken,
     generateRefreshToken,
+    generateMFAChallengeToken
 };

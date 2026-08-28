@@ -1,11 +1,16 @@
-import { loginUser, refreshAccessToken, logoutUser } from "../services/auth.service.js";
+import {
+    loginUser,
+    verifyLoginMFA,
+    refreshAccessToken,
+    logoutUser
+} from "../services/auth.service.js";
 
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         const result = await loginUser(email, password, req.ip, req.headers["user-agent"]);
-        
+
 
         res.status(200).json({
             success: true,
@@ -61,8 +66,42 @@ const logout = async (req, res) => {
     }
 };
 
+const verifyMFA = async (req, res) => {
+
+    try {
+
+        const {
+            mfaChallengeToken,
+            token
+        } = req.body;
+
+
+        const result = await verifyLoginMFA(
+            mfaChallengeToken,
+            token,
+            req.ip,
+            req.headers["user-agent"]
+        );
+
+
+        return res.status(200).json({
+            success: true,
+            message: "MFA verification successful",
+            data: result,
+        });
+
+    } catch (error) {
+
+        return res.status(401).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 export {
     login,
     refresh,
     logout,
+    verifyMFA
 };

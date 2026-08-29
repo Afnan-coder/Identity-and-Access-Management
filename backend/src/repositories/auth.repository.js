@@ -6,6 +6,11 @@ const findUserByEmail = async (email) => {
         .populate("role");
 };
 
+const findUserById = async (userId) => {
+    return await User.findById(userId);
+};
+
 export {
     findUserByEmail,
+    findUserById
 };

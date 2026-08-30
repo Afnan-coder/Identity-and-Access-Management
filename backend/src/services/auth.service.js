@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { UAParser } from "ua-parser-js";
-import { verify } from "otplib";
+import { verify } from "otplib"; 
 
 import { findUserByEmail } from "../repositories/auth.repository.js";
 import {
@@ -125,6 +125,7 @@ const loginUser = async (
 
     // Remove password before returning user
     user.password = undefined;
+    user.mfaSecret = undefined;
 
 
     // --------------------------------------------------

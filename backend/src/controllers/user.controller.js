@@ -1,4 +1,10 @@
-import { registerUser } from "../services/user.service.js";
+import {
+    registerUser, 
+    getAllUsers,
+    getUserById,
+    updateUserById,
+    deleteUserById,
+} from "../services/user.service.js";
 
 const register = async (req, res) => {
     try {
@@ -21,6 +27,104 @@ const register = async (req, res) => {
     }
 };
 
+
+const getUsers = async (req, res) => {
+    try {
+
+        const users = await getAllUsers();
+
+        return res.status(200).json({
+            success: true,
+            message: "Users fetched successfully",
+            data: users,
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
+const getUser = async (req, res) => {
+    try {
+
+        const { id } = req.params;
+
+        const user = await getUserById(id);
+
+        return res.status(200).json({
+            success: true,
+            message: "User fetched successfully",
+            data: user,
+        });
+
+    } catch (error) {
+
+        return res.status(404).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
+const updateUser = async (req, res) => {
+    try {
+
+        const { id } = req.params;
+
+        const updatedUser =
+            await updateUserById(
+                id,
+                req.body
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "User updated successfully",
+            data: updatedUser,
+        });
+
+    } catch (error) {
+
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
+const deleteUser = async (req, res) => {
+    try {
+
+        const { id } = req.params;
+
+        await deleteUserById(id);
+
+        return res.status(200).json({
+            success: true,
+            message: "User deleted successfully",
+        });
+
+    } catch (error) {
+
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
 export {
     register,
+    getUsers,
+    getUser,
+    updateUser,
+    deleteUser,
 };

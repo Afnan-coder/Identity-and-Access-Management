@@ -5,6 +5,7 @@ import {
     getUser,
     updateUser,
     deleteUser,
+    assignRole,
 } from "../controllers/user.controller.js";
 
 import validate from "../middlewares/validate.js";
@@ -45,6 +46,12 @@ router.delete(
     "/:id",
     authenticate,
     deleteUser
+);
+
+router.patch(
+    "/:id/role",
+    authenticate,
+    assignRole
 );
 
 export default router;

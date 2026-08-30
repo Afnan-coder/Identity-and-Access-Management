@@ -32,7 +32,7 @@ const updateUser = async (userId, updateData) => {
             runValidators: true,
         }
     )
-        .select("-password")
+        .select("-password -mfaSecret")
         .populate("role");
 };
 
@@ -41,7 +41,20 @@ const deleteUser = async (userId) => {
     return await User.findByIdAndDelete(userId);
 };
 
-
+const updateUserRole = async (userId, roleId) => {
+    return await User.findByIdAndUpdate(
+        userId,
+        {
+            role: roleId,
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    )
+        .select("-password -mfaSecret")
+        .populate("role");
+};
 
 export {
     createUser,
@@ -50,4 +63,5 @@ export {
     findUserById,
     updateUser,
     deleteUser,
+    updateUserRole,
 };

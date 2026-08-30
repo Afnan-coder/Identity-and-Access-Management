@@ -6,7 +6,10 @@ import {
     findUserById,
     updateUser,
     deleteUser,
+    updateUserRole
 } from "../repositories/user.repository.js";
+
+import {findRoleById} from "../repositories/role.repository.js"
 
 const registerUser = async (userData) => {
 
@@ -110,10 +113,46 @@ const deleteUserById = async (userId) => {
 };
 
 
+const assignRoleToUser = async (userId, roleId) => {
+
+    const user = await findUserById(userId);
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+
+    const role = await findRoleById(roleId);
+
+    if (!role) {
+        throw new Error("Role not found");
+    }
+
+
+    if (
+        user.organization.toString() !==
+        role.organization.toString()
+    ) {
+        throw new Error(
+            "User and role must belong to the same organization"
+        );
+    }
+
+
+    const updatedUser = await updateUserRole(
+        userId,
+        roleId
+    );
+
+    return updatedUser;
+};
+
+
 export {
     registerUser,
     getAllUsers,
     getUserById,
     updateUserById,
     deleteUserById,
+    assignRoleToUser,
 };

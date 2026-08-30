@@ -1,9 +1,10 @@
 import {
-    registerUser, 
+    registerUser,
     getAllUsers,
     getUserById,
     updateUserById,
     deleteUserById,
+    assignRoleToUser,
 } from "../services/user.service.js";
 
 const register = async (req, res) => {
@@ -121,10 +122,45 @@ const deleteUser = async (req, res) => {
 };
 
 
+const assignRole = async (req, res) => {
+    try {
+
+        const { id } = req.params;
+        const { roleId } = req.body;
+
+        if (!roleId) {
+            return res.status(400).json({
+                success: false,
+                message: "Role ID is required",
+            });
+        }
+
+        const updatedUser = await assignRoleToUser(
+            id,
+            roleId
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Role assigned successfully",
+            data: updatedUser,
+        });
+
+    } catch (error) {
+
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
 export {
     register,
     getUsers,
     getUser,
     updateUser,
     deleteUser,
+    assignRole,
 };

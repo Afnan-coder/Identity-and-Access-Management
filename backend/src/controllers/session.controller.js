@@ -67,5 +67,5 @@ const revokeAllSessions = async (req, res) => {
 export {
     getSessions,
     revokeSession,
-    revokeAllSessions
+    revokeAllSessions,
 };

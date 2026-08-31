@@ -2,7 +2,7 @@ import {
     findSessionsByUser,
     findSessionById,
     deactivateSession,
-    deactivateAllSessions
+    deactivateAllSessions,
 } from "../repositories/session.repository.js";
 
 import {
@@ -54,9 +54,8 @@ const revokeAllUserSessions = async (userId) => {
     return true;
 };
 
-
 export {
     getUserSessions,
     revokeUserSession,
-    revokeAllUserSessions
+    revokeAllUserSessions,
 };

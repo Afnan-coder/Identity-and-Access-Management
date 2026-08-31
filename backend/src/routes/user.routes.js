@@ -11,6 +11,7 @@ import {
 import validate from "../middlewares/validate.js";
 import { registerSchema } from "../validators/user.validator.js";
 import authenticate from '../middlewares/auth.middleware.js'
+import authorize from "../middlewares/authorize.middleware.js";
 
 const router = express.Router();
 
@@ -51,6 +52,7 @@ router.delete(
 router.patch(
     "/:id/role",
     authenticate,
+    authorize("users", "assign-role"),
     assignRole
 );
 

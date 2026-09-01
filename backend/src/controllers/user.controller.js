@@ -81,7 +81,10 @@ const updateUser = async (req, res) => {
         const updatedUser =
             await updateUserById(
                 id,
-                req.body
+                req.body,
+                req.user.userId,
+                req.ip,
+                req.headers["user-agent"]
             );
 
         return res.status(200).json({

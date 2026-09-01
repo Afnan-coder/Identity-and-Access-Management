@@ -10,6 +10,7 @@ import {
 } from "../repositories/user.repository.js";
 
 import {findRoleById} from "../repositories/role.repository.js"
+import { logAudit } from "./auditLog.service.js";
 
 const registerUser = async (userData) => {
 
@@ -55,7 +56,10 @@ const getUserById = async (userId) => {
 
 const updateUserById = async (
     userId,
-    updateData
+    updateData,
+    adminUserId,
+    ipAddress,
+    userAgent
 ) => {
 
     const user = await findUserById(userId);
@@ -93,6 +97,22 @@ const updateUserById = async (
         filteredData
     );
 
+    if (updateData.status !== undefined) {
+
+    await logAudit({
+        userId: adminUserId,
+        action: "USER_STATUS_UPDATED",
+        resource: "User",
+        resourceId: userId,
+        ipAddress,
+        userAgent,
+        details: {
+            oldStatus: user.status,
+            newStatus: updateData.status,
+        },
+        status: "success",
+    });
+}
 
     return updatedUser;
 };

@@ -12,6 +12,7 @@ import roleRoutes from "./routes/role.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import sessionRoutes from './routes/session.routes.js'
 import mfaRoutes from "./routes/mfa.routes.js";
+import auditLogRoutes from "./routes/auditLog.routes.js";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/api/roles", roleRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/sessions", sessionRoutes)
 app.use("/api/mfa", mfaRoutes);
+app.use("/api/audit-logs", auditLogRoutes);
 
 //test route
 app.get("/", (req, res) => {

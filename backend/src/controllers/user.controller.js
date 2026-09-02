@@ -140,7 +140,10 @@ const assignRole = async (req, res) => {
 
         const updatedUser = await assignRoleToUser(
             id,
-            roleId
+            roleId,
+            req.user.userId,
+            req.ip,
+            req.headers["user-agent"]
         );
 
         return res.status(200).json({

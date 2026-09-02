@@ -133,13 +133,22 @@ const deleteUserById = async (userId) => {
 };
 
 
-const assignRoleToUser = async (userId, roleId) => {
+const assignRoleToUser = async (
+    userId,
+    roleId,
+    performedBy,
+    ipAddress,
+    userAgent
+) => {
 
     const user = await findUserById(userId);
 
     if (!user) {
         throw new Error("User not found");
     }
+
+
+    const oldRoleId = user.role._id || user.role;
 
 
     const role = await findRoleById(roleId);
@@ -163,6 +172,23 @@ const assignRoleToUser = async (userId, roleId) => {
         userId,
         roleId
     );
+
+
+    await logAudit({
+        user: performedBy,
+        action: "USER_ROLE_ASSIGNED",
+        resource: "User",
+        resourceId: userId,
+        ipAddress,
+        userAgent,
+        details: {
+            oldRole: oldRoleId,
+            newRole: roleId,
+            targetUser: userId,
+        },
+        status: "success",
+    });
+
 
     return updatedUser;
 };

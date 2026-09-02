@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { UAParser } from "ua-parser-js";
-import { verify } from "otplib"; 
+import { verify } from "otplib";
 
 import { findUserByEmail } from "../repositories/auth.repository.js";
 import {
@@ -10,6 +10,8 @@ import {
     generateRefreshToken,
     generateMFAChallengeToken,
 } from "../utils/jwt.js";
+
+import { logAudit } from "./auditLog.service.js";
 
 import {
     createRefreshToken,
@@ -26,9 +28,7 @@ import {
 import User from "../models/User.js";
 
 
-// --------------------------------------------------
 // CREATE AUTHENTICATED SESSION
-// --------------------------------------------------
 
 const createAuthenticatedSession = async (
     user,
@@ -93,9 +93,7 @@ const createAuthenticatedSession = async (
 };
 
 
-// --------------------------------------------------
 // LOGIN
-// --------------------------------------------------
 
 const loginUser = async (
     email,
@@ -108,6 +106,19 @@ const loginUser = async (
 
 
     if (!user) {
+
+        await logAudit({
+            action: "LOGIN_FAILURE",
+            resource: "Authentication",
+            ipAddress,
+            userAgent,
+            details: {
+                reason: "Invalid email or password",
+                email,
+            },
+            status: "failure",
+        });
+
         throw new Error("Invalid email or password");
     }
 
@@ -119,6 +130,19 @@ const loginUser = async (
 
 
     if (!isPasswordValid) {
+
+        await logAudit({
+            user: user._id,
+            action: "LOGIN_FAILURE",
+            resource: "Authentication",
+            ipAddress,
+            userAgent,
+            details: {
+                reason: "Invalid email or password",
+            },
+            status: "failure",
+        });
+
         throw new Error("Invalid email or password");
     }
 
@@ -134,12 +158,20 @@ const loginUser = async (
 
     if (user.mfaEnabled) {
 
+        await logAudit({
+            user: user._id,
+            action: "MFA_REQUIRED",
+            resource: "Authentication",
+            ipAddress,
+            userAgent,
+            status: "success",
+        });
+
         const mfaChallengeToken =
             generateMFAChallengeToken({
                 userId: user._id,
                 type: "mfa",
             });
-
 
         return {
             mfaRequired: true,
@@ -148,21 +180,28 @@ const loginUser = async (
     }
 
 
-    // --------------------------------------------------
     // NORMAL LOGIN
-    // --------------------------------------------------
 
-    return await createAuthenticatedSession(
+    const session = await createAuthenticatedSession(
         user,
         ipAddress,
         userAgent
     );
+
+    await logAudit({
+        user: user._id,
+        action: "LOGIN_SUCCESS",
+        resource: "Authentication",
+        ipAddress,
+        userAgent,
+        status: "success",
+    });
+
+    return session;
 };
 
 
-// --------------------------------------------------
 // VERIFY MFA DURING LOGIN
-// --------------------------------------------------
 
 const verifyLoginMFA = async (
     mfaChallengeToken,
@@ -219,13 +258,25 @@ const verifyLoginMFA = async (
     }
 
 
-    const isValid = await verify({
+    const result = await verify({
         secret: user.mfaSecret,
         token,
     });
 
+    const isValid = result.valid;
+
 
     if (!isValid) {
+
+        await logAudit({
+            user: user._id,
+            action: "MFA_LOGIN_FAILURE",
+            resource: "Authentication",
+            ipAddress,
+            userAgent,
+            status: "failure",
+        });
+
         throw new Error("Invalid MFA code");
     }
 
@@ -236,11 +287,22 @@ const verifyLoginMFA = async (
     // MFA successfully verified
     // Now create the real authentication session
 
-    return await createAuthenticatedSession(
+    const session = await createAuthenticatedSession(
         user,
         ipAddress,
         userAgent
     );
+
+    await logAudit({
+        user: user._id,
+        action: "MFA_LOGIN_SUCCESS",
+        resource: "Authentication",
+        ipAddress,
+        userAgent,
+        status: "success",
+    });
+
+    return session;
 };
 
 

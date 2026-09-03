@@ -11,12 +11,18 @@ import {
     revokeAllRefreshTokensByUser
 } from "../repositories/refreshToken.repository.js";
 
+import {logAudit} from './auditLog.service.js'
+
 const getUserSessions = async (userId) => {
     return await findSessionsByUser(userId);
 };
 
-
-const revokeUserSession = async (sessionId, userId) => {
+const revokeUserSession = async (
+    sessionId,
+    userId,
+    ipAddress,
+    userAgent
+) => {
 
     const session = await findSessionById(sessionId);
 
@@ -42,14 +48,37 @@ const revokeUserSession = async (sessionId, userId) => {
         await revokeRefreshToken(refreshToken.tokenHash);
     }
 
+    await logAudit({
+        user: userId,
+        action: "SESSION_REVOKED",
+        resource: "Session",
+        resourceId: sessionId,
+        ipAddress,
+        userAgent,
+        status: "success",
+    });
+
     return true;
 };
 
-const revokeAllUserSessions = async (userId) => {
+const revokeAllUserSessions = async (
+    userId,
+    ipAddress,
+    userAgent
+) => {
 
     await deactivateAllSessions(userId);
 
     await revokeAllRefreshTokensByUser(userId);
+
+    await logAudit({
+        user: userId,
+        action: "ALL_SESSIONS_REVOKED",
+        resource: "Session",
+        ipAddress,
+        userAgent,
+        status: "success",
+    });
 
     return true;
 };

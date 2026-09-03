@@ -26,7 +26,9 @@ const revokeSession = async (req, res) => {
 
         await revokeUserSession(
             sessionId,
-            userId
+            userId,
+            req.ip,
+            req.headers["user-agent"]
         );
 
         return res.status(200).json({
@@ -47,7 +49,11 @@ const revokeAllSessions = async (req, res) => {
 
         const userId = req.user.userId;
 
-        await revokeAllUserSessions(userId);
+        await revokeAllUserSessions(
+            userId,
+            req.ip,
+            req.headers["user-agent"]
+        );
 
         return res.status(200).json({
             success: true,

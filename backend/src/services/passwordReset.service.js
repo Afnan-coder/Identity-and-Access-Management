@@ -17,9 +17,14 @@ import {
     deactivateAllSessions,
 } from "../repositories/session.repository.js";
 
+import { logAudit } from "./auditLog.service.js";
 
-const forgotPassword = async (email) => {
 
+const forgotPassword = async (
+    email,
+    ipAddress,
+    userAgent
+) => {
     const user = await findUserByEmail(email);
 
     if (!user) {
@@ -42,13 +47,20 @@ const forgotPassword = async (email) => {
         Date.now() + 15 * 60 * 1000
     );
 
-
     await createPasswordResetToken({
         user: user._id,
         tokenHash,
         expiresAt,
     });
 
+    await logAudit({
+        user: user._id,
+        action: "PASSWORD_RESET_REQUEST",
+        resource: "Authentication",
+        ipAddress,
+        userAgent,
+        status: "success",
+    });
 
     return {
         resetToken,
@@ -58,7 +70,9 @@ const forgotPassword = async (email) => {
 
 const resetPassword = async (
     resetToken,
-    newPassword
+    newPassword,
+    ipAddress,
+    userAgent
 ) => {
 
     if (!resetToken) {
@@ -129,6 +143,15 @@ const resetPassword = async (
 
     // Deactivate all existing sessions
     await deactivateAllSessions(user._id);
+
+    await logAudit({
+    user: user._id,
+    action: "PASSWORD_RESET_SUCCESS",
+    resource: "Authentication",
+    ipAddress,
+    userAgent,
+    status: "success",
+});
 
     return true;
 };

@@ -112,7 +112,11 @@ const forgotPasswordController = async (req, res) => {
     try {
         const { email } = req.body;
 
-        const result = await forgotPassword(email);
+        const result = await forgotPassword(
+            email,
+            req.ip,
+            req.headers["user-agent"]
+        );
 
         return res.status(200).json({
             success: true,
@@ -138,7 +142,9 @@ const resetPasswordController = async (req, res) => {
 
         await resetPassword(
             resetToken,
-            newPassword
+            newPassword,
+            req.ip,
+            req.headers["user-agent"]
         );
 
         return res.status(200).json({

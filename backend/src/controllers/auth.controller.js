@@ -57,7 +57,11 @@ const logout = async (req, res) => {
     try {
         const { refreshToken } = req.body;
 
-        await logoutUser(refreshToken);
+        await logoutUser(
+            refreshToken,
+            req.ip,
+            req.headers["user-agent"]
+        );
 
         return res.status(200).json({
             success: true,

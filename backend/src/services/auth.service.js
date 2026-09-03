@@ -385,24 +385,25 @@ const refreshAccessToken = async (refreshToken) => {
 // LOGOUT
 // --------------------------------------------------
 
-const logoutUser = async (refreshToken) => {
+const logoutUser = async (
+    refreshToken,
+    ipAddress,
+    userAgent
+) => {
 
     if (!refreshToken) {
         throw new Error("Refresh token required");
     }
-
 
     const refreshTokenHash = crypto
         .createHash("sha256")
         .update(refreshToken)
         .digest("hex");
 
-
     const storedToken =
         await findRefreshTokenByHash(
             refreshTokenHash
         );
-
 
     if (!storedToken) {
         throw new Error(
@@ -410,24 +411,20 @@ const logoutUser = async (refreshToken) => {
         );
     }
 
-
     if (storedToken.revoked) {
         throw new Error(
             "Refresh token already revoked"
         );
     }
 
-
     await revokeRefreshToken(
         refreshTokenHash
     );
-
 
     const session =
         await findSessionByRefreshToken(
             storedToken._id
         );
-
 
     if (session) {
         await deactivateSession(
@@ -435,6 +432,14 @@ const logoutUser = async (refreshToken) => {
         );
     }
 
+    await logAudit({
+        user: storedToken.user,
+        action: "LOGOUT",
+        resource: "Authentication",
+        ipAddress,
+        userAgent,
+        status: "success",
+    });
 
     return true;
 };

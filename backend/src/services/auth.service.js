@@ -392,10 +392,7 @@ const refreshAccessToken = async (
     return accessToken;
 };
 
-
-// --------------------------------------------------
 // LOGOUT
-// --------------------------------------------------
 
 const logoutUser = async (
     refreshToken,

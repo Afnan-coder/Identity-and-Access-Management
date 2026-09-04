@@ -21,31 +21,31 @@ router.post(
     register
 );
 
-
 router.get(
     "/",
     authenticate,
+    authorize("users", "read"),
     getUsers
 );
-
 
 router.get(
     "/:id",
     authenticate,
+    authorize("users", "read"),
     getUser
 );
-
 
 router.put(
     "/:id",
     authenticate,
+    authorize("users", "update"),
     updateUser
 );
-
 
 router.delete(
     "/:id",
     authenticate,
+    authorize("users", "delete"),
     deleteUser
 );
 

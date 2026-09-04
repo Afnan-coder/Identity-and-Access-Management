@@ -35,7 +35,9 @@ const refresh = async (req, res) => {
         const { refreshToken } = req.body;
 
         const accessToken = await refreshAccessToken(
-            refreshToken
+            refreshToken,
+            req.ip,
+            req.headers["user-agent"]
         );
 
         return res.status(200).json({

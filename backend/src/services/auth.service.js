@@ -306,11 +306,13 @@ const verifyLoginMFA = async (
 };
 
 
-// --------------------------------------------------
 // REFRESH ACCESS TOKEN
-// --------------------------------------------------
 
-const refreshAccessToken = async (refreshToken) => {
+const refreshAccessToken = async (
+    refreshToken,
+    ipAddress,
+    userAgent
+) => {
 
     if (!refreshToken) {
         throw new Error("Refresh token required");
@@ -353,6 +355,16 @@ const refreshAccessToken = async (refreshToken) => {
 
 
     if (storedToken.revoked) {
+
+        await logAudit({
+            user: storedToken.user,
+            action: "REFRESH_TOKEN_REUSE_DETECTED",
+            resource: "Authentication",
+            ipAddress,
+            userAgent,
+            status: "failure",
+        });
+
         throw new Error(
             "Refresh token has been revoked"
         );

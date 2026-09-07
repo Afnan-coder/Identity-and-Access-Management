@@ -6,10 +6,26 @@ import {
     deleteTeam,
 } from "../repositories/team.repository.js";
 
+import {
+    findDepartmentById,
+} from "../repositories/department.repository.js";
+
 
 const registerTeam = async (teamData) => {
 
-    const team = await createTeam(teamData);
+    const department =
+        await findDepartmentById(
+            teamData.department
+        );
+
+    if (!department) {
+        throw new Error(
+            "Department not found"
+        );
+    }
+
+    const team =
+        await createTeam(teamData);
 
     return team;
 };

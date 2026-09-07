@@ -6,10 +6,12 @@ import {
     findUserById,
     updateUser,
     deleteUser,
-    updateUserRole
+    updateUserRole,
+    updateUserTeam,
 } from "../repositories/user.repository.js";
 
-import {findRoleById} from "../repositories/role.repository.js"
+import { findRoleById } from "../repositories/role.repository.js";
+import { findTeamById } from "../repositories/team.repository.js";
 import { logAudit } from "./auditLog.service.js";
 
 const registerUser = async (userData) => {
@@ -99,20 +101,20 @@ const updateUserById = async (
 
     if (updateData.status !== undefined) {
 
-    await logAudit({
-        userId: adminUserId,
-        action: "USER_STATUS_UPDATED",
-        resource: "User",
-        resourceId: userId,
-        ipAddress,
-        userAgent,
-        details: {
-            oldStatus: user.status,
-            newStatus: updateData.status,
-        },
-        status: "success",
-    });
-}
+        await logAudit({
+            userId: adminUserId,
+            action: "USER_STATUS_UPDATED",
+            resource: "User",
+            resourceId: userId,
+            ipAddress,
+            userAgent,
+            details: {
+                oldStatus: user.status,
+                newStatus: updateData.status,
+            },
+            status: "success",
+        });
+    }
 
     return updatedUser;
 };
@@ -193,6 +195,66 @@ const assignRoleToUser = async (
     return updatedUser;
 };
 
+const assignTeamToUser = async (
+    userId,
+    teamId,
+    performedBy,
+    ipAddress,
+    userAgent
+) => {
+
+    const user = await findUserById(userId);
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+
+    const team = await findTeamById(teamId);
+
+    if (!team) {
+        throw new Error("Team not found");
+    }
+
+
+    if (
+        user.organization.toString() !==
+        team.department.organization.toString()
+    ) {
+        throw new Error(
+            "User and team must belong to the same organization"
+        );
+    }
+
+
+    const oldTeamId = user.team || null;
+
+
+    const updatedUser = await updateUserTeam(
+        userId,
+        teamId
+    );
+
+
+    await logAudit({
+        user: performedBy,
+        action: "USER_TEAM_ASSIGNED",
+        resource: "User",
+        resourceId: userId,
+        ipAddress,
+        userAgent,
+        details: {
+            oldTeam: oldTeamId,
+            newTeam: teamId,
+            targetUser: userId,
+        },
+        status: "success",
+    });
+
+
+    return updatedUser;
+};
+
 
 export {
     registerUser,
@@ -201,4 +263,5 @@ export {
     updateUserById,
     deleteUserById,
     assignRoleToUser,
+    assignTeamToUser,
 };

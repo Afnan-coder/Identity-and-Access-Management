@@ -5,6 +5,7 @@ import {
     updateUserById,
     deleteUserById,
     assignRoleToUser,
+    assignTeamToUser,
 } from "../services/user.service.js";
 
 const register = async (req, res) => {
@@ -161,6 +162,45 @@ const assignRole = async (req, res) => {
     }
 };
 
+const assignTeam = async (req, res) => {
+    try {
+
+        const { id } = req.params;
+        const { teamId } = req.body;
+
+        if (!teamId) {
+            return res.status(400).json({
+                success: false,
+                message: "Team ID is required",
+            });
+        }
+
+
+        const updatedUser = await assignTeamToUser(
+            id,
+            teamId,
+            req.user.userId,
+            req.ip,
+            req.headers["user-agent"]
+        );
+
+
+        return res.status(200).json({
+            success: true,
+            message: "Team assigned to user successfully",
+            data: updatedUser,
+        });
+
+    } catch (error) {
+
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+
+    }
+};
+
 
 export {
     register,
@@ -169,4 +209,5 @@ export {
     updateUser,
     deleteUser,
     assignRole,
+    assignTeam,
 };

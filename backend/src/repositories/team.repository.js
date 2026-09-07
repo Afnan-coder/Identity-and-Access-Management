@@ -16,9 +16,8 @@ const findAllTeams = async () => {
 
 
 const findTeamById = async (teamId) => {
-
-    return await Team.findById(teamId);
-
+    return await Team.findById(teamId)
+        .populate("department");
 };
 
 

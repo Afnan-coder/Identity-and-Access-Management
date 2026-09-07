@@ -56,6 +56,23 @@ const updateUserRole = async (userId, roleId) => {
         .populate("role");
 };
 
+const updateUserTeam = async (userId, teamId) => {
+
+    return await User.findByIdAndUpdate(
+        userId,
+        {
+            team: teamId,
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    )
+        .select("-password -mfaSecret")
+        .populate("role");
+
+};
+
 export {
     createUser,
     findUserByEmail,
@@ -64,4 +81,5 @@ export {
     updateUser,
     deleteUser,
     updateUserRole,
+    updateUserTeam
 };

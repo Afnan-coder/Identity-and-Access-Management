@@ -6,6 +6,7 @@ import {
     updateUser,
     deleteUser,
     assignRole,
+    assignTeam,
 } from "../controllers/user.controller.js";
 
 import validate from "../middlewares/validate.js";
@@ -54,6 +55,13 @@ router.patch(
     authenticate,
     authorize("users", "assign-role"),
     assignRole
+);
+
+router.patch(
+    "/:id/team",
+    authenticate,
+    authorize("users", "assign-team"),
+    assignTeam
 );
 
 export default router;

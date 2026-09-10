@@ -151,6 +151,21 @@ const loginUser = async (
     user.password = undefined;
     user.mfaSecret = undefined;
 
+    if (user.status !== "active") {
+        await logAudit({
+            user: user._id,
+            action: "LOGIN_FAILURE",
+            resource: "Authentication",
+            ipAddress,
+            userAgent,
+            details: {
+                reason: "User account is inactive",
+            },
+            status: "failure",
+        });
+
+        throw new Error("User account is inactive");
+    }
 
     // --------------------------------------------------
     // MFA CHECK

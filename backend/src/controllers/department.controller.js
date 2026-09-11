@@ -35,7 +35,9 @@ const getDepartments = async (req, res) => {
     try {
 
         const departments =
-            await getAllDepartments();
+            await getAllDepartments(
+                req.user.organizationId
+            );
 
         res.status(200).json({
             success: true,
@@ -60,7 +62,10 @@ const getDepartment = async (req, res) => {
         const { id } = req.params;
 
         const department =
-            await getDepartmentById(id);
+            await getDepartmentById(
+                id,
+                req.user.organizationId
+            );
 
         res.status(200).json({
             success: true,
@@ -87,7 +92,8 @@ const updateDepartment = async (req, res) => {
         const department =
             await editDepartment(
                 id,
-                req.body
+                req.body,
+                req.user.organizationId
             );
 
         res.status(200).json({
@@ -112,7 +118,10 @@ const deleteDepartment = async (req, res) => {
 
         const { id } = req.params;
 
-        await removeDepartment(id);
+        await removeDepartment(
+            id,
+            req.user.organizationId
+        );
 
         res.status(200).json({
             success: true,

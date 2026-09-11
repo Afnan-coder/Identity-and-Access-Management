@@ -16,16 +16,26 @@ const registerDepartment = async (departmentData) => {
 };
 
 
-const getAllDepartments = async () => {
+const getAllDepartments = async (organizationId) => {
 
     const departments =
         await findAllDepartments();
 
-    return departments;
+    const organizationDepartments =
+        departments.filter(
+            (department) =>
+                department.organization.toString() ===
+                organizationId.toString()
+        );
+
+    return organizationDepartments;
 };
 
 
-const getDepartmentById = async (departmentId) => {
+const getDepartmentById = async (
+    departmentId,
+    organizationId
+) => {
 
     const department =
         await findDepartmentById(departmentId);
@@ -34,13 +44,21 @@ const getDepartmentById = async (departmentId) => {
         throw new Error("Department not found");
     }
 
+    if (
+        department.organization.toString() !==
+        organizationId.toString()
+    ) {
+        throw new Error("Access denied");
+    }
+
     return department;
 };
 
 
 const editDepartment = async (
     departmentId,
-    departmentData
+    departmentData,
+    organizationId
 ) => {
 
     const department =
@@ -48,6 +66,13 @@ const editDepartment = async (
 
     if (!department) {
         throw new Error("Department not found");
+    }
+
+    if (
+        department.organization.toString() !==
+        organizationId.toString()
+    ) {
+        throw new Error("Access denied");
     }
 
     const updatedDepartment =
@@ -60,13 +85,23 @@ const editDepartment = async (
 };
 
 
-const removeDepartment = async (departmentId) => {
+const removeDepartment = async (
+    departmentId,
+    organizationId
+) => {
 
     const department =
         await findDepartmentById(departmentId);
 
     if (!department) {
         throw new Error("Department not found");
+    }
+
+    if (
+        department.organization.toString() !==
+        organizationId.toString()
+    ) {
+        throw new Error("Access denied");
     }
 
     await deleteDepartment(departmentId);

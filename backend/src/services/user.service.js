@@ -36,20 +36,36 @@ const registerUser = async (userData) => {
 };
 
 
-const getAllUsers = async () => {
+const getAllUsers = async (organizationId) => {
 
     const users = await findAllUsers();
 
-    return users;
+    const organizationUsers = users.filter(
+        (user) =>
+            user.organization.toString() ===
+            organizationId.toString()
+    );
+
+    return organizationUsers;
 };
 
 
-const getUserById = async (userId) => {
+const getUserById = async (
+    userId,
+    organizationId
+) => {
 
     const user = await findUserById(userId);
 
     if (!user) {
         throw new Error("User not found");
+    }
+
+    if (
+        user.organization.toString() !==
+        organizationId.toString()
+    ) {
+        throw new Error("Access denied");
     }
 
     return user;
@@ -60,6 +76,7 @@ const updateUserById = async (
     userId,
     updateData,
     adminUserId,
+    organizationId,
     ipAddress,
     userAgent
 ) => {
@@ -70,6 +87,12 @@ const updateUserById = async (
         throw new Error("User not found");
     }
 
+    if (
+        user.organization.toString() !==
+        organizationId.toString()
+    ) {
+        throw new Error("Access denied");
+    }
 
     const allowedFields = [
         "firstName",
@@ -120,7 +143,10 @@ const updateUserById = async (
 };
 
 
-const deleteUserById = async (userId) => {
+const deleteUserById = async (
+    userId,
+    organizationId
+) => {
 
     const user = await findUserById(userId);
 
@@ -128,6 +154,12 @@ const deleteUserById = async (userId) => {
         throw new Error("User not found");
     }
 
+    if (
+        user.organization.toString() !==
+        organizationId.toString()
+    ) {
+        throw new Error("Access denied");
+    }
 
     await deleteUser(userId);
 

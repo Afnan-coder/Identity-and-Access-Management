@@ -33,7 +33,9 @@ const register = async (req, res) => {
 const getUsers = async (req, res) => {
     try {
 
-        const users = await getAllUsers();
+        const users = await getAllUsers(
+            req.user.organizationId
+        );
 
         return res.status(200).json({
             success: true,
@@ -56,7 +58,10 @@ const getUser = async (req, res) => {
 
         const { id } = req.params;
 
-        const user = await getUserById(id);
+        const user = await getUserById(
+            id,
+            req.user.organizationId
+        );
 
         return res.status(200).json({
             success: true,
@@ -84,6 +89,7 @@ const updateUser = async (req, res) => {
                 id,
                 req.body,
                 req.user.userId,
+                req.user.organizationId,
                 req.ip,
                 req.headers["user-agent"]
             );
@@ -109,7 +115,10 @@ const deleteUser = async (req, res) => {
 
         const { id } = req.params;
 
-        await deleteUserById(id);
+        await deleteUserById(
+            id,
+            req.user.organizationId
+        );
 
         return res.status(200).json({
             success: true,
